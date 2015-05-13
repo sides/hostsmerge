@@ -20,9 +20,9 @@ def default_paths(opts):
 		elif os.name == "posix":
 			hosts_path = "/etc/hosts"
 		else:
-			raise Exception("no hosts file found (unsupported os: " + os.name + "), specify path manually with --hosts")
+			raise Exception("No hosts file found (unsupported os: " + os.name + "), specify path manually with --hosts")
 		if not os.path.isfile(hosts_path):
-			raise Exception("no hosts file found in \"" + hosts_path + "\", specify path manually with --hosts")
+			raise Exception("No hosts file found in \"" + hosts_path + "\", specify path manually with --hosts")
 		opts["hosts"] = hosts_path
 	if not "backup" in opts:
 		opts["backup"] = "backup"
@@ -71,7 +71,7 @@ def parse_hosts(lines):
 	return hosts
 
 def backup_rules(opts):
-	if not "output" in opts or opts["hosts"] is opts["output"]:
+	if not "no-backup" in opts and (not "output" in opts or opts["hosts"] is opts["output"]):
 		if not os.path.exists(opts["backup"]):
 			os.makedirs(opts["backup"])
 		shutil.copy2(opts["hosts"], os.path.join("backup", os.path.splitext(opts["hosts"])[0] + "_" + time.strftime("%Y%m%d_%H%M%S")))
@@ -129,7 +129,7 @@ def usage():
 def main():
 	shorthand = {"h": "help", "v": "version", "s": "set", "g": "get", "b": "no-backup", "n": "new", "o": "sort", "H": "hosts", "B": "backup", "O": "output"}
 	try:
-		copts, args = getopt.getopt(sys.argv[1:], "hvsgrbnoH:B:O:", ["help", "version", "hosts=", "set", "get", "no-backup", "backup=", "new", "sort", "output="])
+		copts, args = getopt.getopt(sys.argv[1:], "hvsgbnoH:B:O:", ["help", "version", "hosts=", "set", "get", "no-backup", "backup=", "new", "sort", "output="])
 	except getopt.GetoptError as err:
 		print str(err)
 		usage()
