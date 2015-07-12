@@ -15,10 +15,10 @@ def read_config(path):
 def default_paths(opts):
 	if not "hosts" in opts:
 		hosts_path = ""
-		if os.name == "nt":
-			hosts_path = os.path.join(os.environ["SYSTEMROOT"], "system32/drivers/etc/hosts")
-		elif os.name == "posix":
+		if os.name == "posix":
 			hosts_path = "/etc/hosts"
+		elif os.name == "nt":
+			hosts_path = os.path.join(os.environ["SYSTEMROOT"], "system32/drivers/etc/hosts")
 		else:
 			raise Exception("No hosts file found (unsupported os: " + os.name + "), specify path manually with --hosts")
 		if not os.path.isfile(hosts_path):
@@ -78,6 +78,7 @@ def backup_rules(opts):
 
 def merge_rules(opts):
 	hosts = read_hosts(opts["hosts"]) if not "new" in opts else {}
+	opt_sort = "sort" in opts
 	for uri in opts["sources"]:
 		if os.path.isfile(uri):
 			new_hosts = read_hosts(uri)
@@ -90,7 +91,7 @@ def merge_rules(opts):
 				hosts[ip] = list(set().union(hosts[ip], hostnames))
 			else:
 				hosts[ip] = hostnames
-			if "sort" in opts:
+			if opt_sort:
 				hosts[ip] = sorted(hosts[ip])
 	backup_rules(opts)
 	write_hosts(opts["output"] if "output" in opts else opts["hosts"], hosts)
@@ -98,14 +99,9 @@ def merge_rules(opts):
 def get_rules(opts):
 	hosts = read_hosts(opts["hosts"])
 	for query in opts["queries"]:
-		is_ip = True
+		query_is_ip = is_ip(query)
 		found = 0
-		if not ":" in query: # ipv6
-			try:
-				socket.inet_aton(query) # ipv4
-			except socket.error:
-				is_ip = False
-		if is_ip:
+		if query_is_ip:
 			if query in hosts:
 				print(" ".join(hosts[query]) + " resolve(s) to " + query)
 				found += 1
@@ -116,12 +112,20 @@ def get_rules(opts):
 					found += 1
 		if not found:
 			print(query + " - nothing found")
-		elif found > 1 and not is_ip:
+		elif found > 1 and not query_is_ip:
 			print("Warning: " + query + " resolves to multiple hostnames?")
 
 def set_rules(opts):
 	hosts = read_hosts(opts["hosts"])
 	raise NotImplementedError("NotImplementedError")
+
+def is_ip(value):
+	if not ":" in value: # ipv6
+		try:
+			socket.inet_aton(value) # ipv4
+		except socket.error:
+			return False
+	return True
 
 def usage():
 	print("Usage:\t" + os.path.basename(sys.argv[0]) + " [options] <url|file>")
@@ -160,11 +164,10 @@ def main():
 		else:
 			opts["sources"] = args
 			merge_rules(opts)
+			print("Success!")
 	except Exception as err:
 		print("Failed: " + str(err))
 		sys.exit(1)
-
-	print("Success!")
 
 if __name__ == "__main__":
 	main()
