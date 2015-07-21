@@ -117,7 +117,60 @@ def get_rules(opts):
 
 def set_rules(opts):
 	hosts = read_hosts(opts["hosts"])
-	raise NotImplementedError("NotImplementedError")
+	queries = zip(opts["queries"][0::2], opts["queries"][1::2])
+	opt_new = "new" in opts
+	if len(opts["queries"]) % 2 != 0:
+		queries.append((opts["queries"][-1], ""))
+	for names, value in queries:
+		value_is_ip = is_ip(value)
+		names = names.split(",")
+		for name in names:
+			name_is_ip = is_ip(name)
+			if not name_is_ip and value == "":
+				for ip, hostnames in hosts.iteritems():
+					if name in hostnames:
+						hosts[ip].remove(name)
+			elif name_is_ip and value == "":
+				del hosts[name];
+			elif not name_is_ip and value_is_ip:
+				for ip, hostnames in hosts.iteritems():
+					if name in hostnames:
+						hosts[ip].remove(name)
+				if not opt_new and value in hosts:
+					hosts[value].append(name)
+				else:
+					hosts[value] = [name]
+			elif name_is_ip and not value_is_ip:
+				for ip, hostnames in hosts.iteritems():
+					if value in hostnames:
+						hosts[ip].remove(value)
+				if not opt_new and name in hosts:
+					hosts[name].append(value)
+				else:
+					hosts[name] = [value]
+			elif not name_is_ip and not value_is_ip and not name == value:
+				found = 0
+				for ip, hostnames in hosts.iteritems():
+					if name in hostnames:
+						hosts[ip].remove(name)
+					if value in hostnames:
+						hosts[ip].append(name)
+						if opt_new:
+							hosts[ip].remove(value)
+						found += 1
+				if found <= 0:
+					print(value + " - nothing found")
+			elif name_is_ip and value_is_ip and not name == value:
+				if value in hosts:
+					if not opt_new and name in hosts:
+						hosts[name] += hosts[value]
+					else:
+						hosts[name] = hosts[value]
+					del hosts[value]
+				else:
+					print(value + " - nothing found")
+	backup_rules(opts)
+	write_hosts(opts["output"] if "output" in opts else opts["hosts"], hosts)
 
 def is_ip(value):
 	if not ":" in value: # ipv6
