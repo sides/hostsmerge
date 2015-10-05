@@ -51,7 +51,7 @@ def read_list(path):
 
 def get_list(url):
 	print("Retrieving " + url + "...")
-	return parse_list(urllib2.urlopen(url).read())
+	return parse_list(urllib2.urlopen(urllib2.Request(url, headers={"User-Agent": "Python/urllib2"})).read())
 
 def parse_hosts(lines):
 	hosts = {}
@@ -84,7 +84,7 @@ def write_hosts(path, hosts):
 
 def get_hosts(url):
 	print("Retrieving " + url + "...")
-	return parse_hosts(urllib2.urlopen(url).read())
+	return parse_hosts(urllib2.urlopen(urllib2.Request(url, headers={"User-Agent": "Python/urllib2"})).read())
 
 def backup_rules(opts):
 	if not "no-backup" in opts and (not "output" in opts or opts["hostspath"] == opts["output"]):
