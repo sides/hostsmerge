@@ -22,7 +22,7 @@ Option  | Explanation
 ```-H```, ```--hostspath``` | Specify manual path to hosts file. Defaults to system default.
 ```-B```, ```--backup``` | Specify manual folder for backup files. Defaults to ```backup/```.
 ```-O```, ```--output``` | Specify manual output file. Defaults to the specified ```hostspath```.
-```-l```, ```--hostslist``` | See: [Hostslist](#hostslist)
+```-l```, ```--hostslist``` | See: [Hostslist](#hostslist).
 
 ## Configuration
 Place a ```hostsmerge.conf``` file in the folder where ```hostsmerge.py``` resides and each line will be parsed as an option when running hostsmerge. Example:
@@ -44,25 +44,18 @@ http://pgl.yoyo.org/adservers/serverlist.php?hostformat=hosts&showintro=1&mimety
 ```
 
 ## Setting
-When ```--set``` is specified, the arguments are used to set specific rules. Arguments are counted as pairs, i.e. ```hostsmerge.py --set key1 value1 key2 value2 ...```, and keys can be comma separated. If there's no value (when the number of arguments are odd not even) then the last value is interpreted as "null" (remove).
+When ```--set``` is specified, the arguments are used to set specific rules. Arguments are counted as pairs, i.e. ```hostsmerge.py --set key1 value1 key2 value2 ...```, and keys can be comma separated. Both keys and values can either be a hostname or an ip address. When the number of arguments are odd and not even the last value is interpreted as "null" (remove).
 
-```hostsmerge.py --set badhostname.com 127.0.0.1``` will add the rule ```127.0.0.1  badhostname.com```
+Depending on whether the key is a hostname or ip address and the value a hostname or ip address, different functionality is performed.
 
-```hostsmerge.py --set badhostname.com,worsehostname.com 127.0.0.1``` will add the rules ```127.0.0.1 badhostname.com``` and ```127.0.0.1 worsehostname.com```
-
-```hostsmerge.py --set 127.0.0.1 badhostname``` will add the rule ```127.0.0.1  badhostname.com```
-
-```hostsmerge.py --set --new 127.0.0.1 localhost``` will add the rule ```127.0.0.1  localhost``` and remove all other rules using the same ip address.
-
-```hostsmerge.py --set 127.0.0.1 0.0.0.0``` will move all of ```0.0.0.0```'s rules to ```127.0.0.1```
-
-```hostsmerge.py --set --new 127.0.0.1 0.0.0.0``` will clear all of ```127.0.0.1``` rules and move all of ```0.0.0.0``` rules to ```127.0.0.1```
-
-```hostsmerge.py --set badhostname.com worsehostname.com``` will resolve ```badhostname.com``` to the same ip address as ```worsehostname.com```
-
-```hostsmerge.py --set --new badhostname.com worsehostname.com``` will resolve ```badhostname.com``` to the same ip address as ```worsehostname.com``` and remove ```worsehostname.com```'s rule.
-
-```hostsmerge.py --set badhostname.com``` will remove ```badhostname.com```'s rule.
+Combination | Explanation
+------------- | -------------
+```hostname ip``` | Makes ```hostname``` resolve to ```ip```.
+```ip hostname``` | Makes ```hostname``` resolve to ```ip```. If ```--new``` is specified, all of ```ip```'s resolves are cleared first.
+```hostname1 hostname2``` | Makes ```hostname1``` resolve to the same ip address as ```hostname2```. If ```--new``` is specified, ```hostname2``` will then be removed.
+```ip1 ip2``` | Moves all of ```ip2```'s resolves to ```ip1```. If ```--new``` is specified, all of ```ip1```'s resolves are cleared first.
+```hostname``` | Removes ```hostname```.
+```ip``` | Removes all of ```ip```'s resolves.
 
 ## Getting
 When ``--get`` is specified, the arguments are used to get information about rules.
