@@ -14,15 +14,15 @@ Option  | Explanation
 ------------- | -------------
 ```-h```, ```--help```  | Show help.
 ```-v```, ```--version```  | Show version.
-```-s```, ```--set``` | See: [Setting](#Setting).
-```-g```, ```--get``` | See: [Getting](#Getting).
+```-s```, ```--set``` | See: [Setting](#setting).
+```-g```, ```--get``` | See: [Getting](#setting).
 ```-b```, ```--no-backup``` | Don't make any backups.
-```-n```, ```--new``` | Replace contents of old hosts file when merging. See also: [Setting](#Setting).
+```-n```, ```--new``` | Replace contents of old hosts file when merging. See also: [Setting](#setting).
 ```-o```, ```--sort``` | Sort the rules alphabetically by hostname.
 ```-H```, ```--hostspath``` | Specify manual path to hosts file. Defaults to system default.
 ```-B```, ```--backup``` | Specify manual folder for backup files. Defaults to ```backup/```.
 ```-O```, ```--output``` | Specify manual output file. Defaults to the specified ```hostspath```.
-```-l```, ```--hostslist``` | See: [Hostslist](#Hostslist)
+```-l```, ```--hostslist``` | See: [Hostslist](#hostslist)
 
 ## Configuration
 Place a ```hostsmerge.conf``` file in the folder where ```hostsmerge.py``` resides and each line will be parsed as an option when running hostsmerge. Example:
