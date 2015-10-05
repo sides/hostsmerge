@@ -44,7 +44,7 @@ def parse_list(lines):
 	return items
 
 def read_list(path):
-	print("Reading " + path + "...")
+	print("Reading " + os.path.abspath(path) + "...")
 	with open(path, "r") as list_file:
 		lines = list_file.read()
 	return parse_list(lines)
@@ -68,7 +68,7 @@ def parse_hosts(lines):
 	return hosts
 
 def read_hosts(path):
-	print("Reading " + path + "...")
+	print("Reading " + os.path.abspath(path) + "...")
 	with open(path, "r") as hosts_file:
 		lines = hosts_file.read()
 	return parse_hosts(lines)
