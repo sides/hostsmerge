@@ -44,13 +44,13 @@ def parse_list(lines):
 	return items
 
 def read_list(path):
-	print("Reading " + os.path.abspath(path) + "...")
+	print("Reading list file " + os.path.abspath(path) + "...")
 	with open(path, "r") as list_file:
 		lines = list_file.read()
 	return parse_list(lines)
 
 def get_list(url):
-	print("Retrieving " + url + "...")
+	print("Retrieving list file " + url + "...")
 	return parse_list(urllib2.urlopen(urllib2.Request(url, headers={"User-Agent": "Python/urllib2"})).read())
 
 def parse_hosts(lines):
