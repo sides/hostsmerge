@@ -20,9 +20,9 @@ def default_paths(opts):
 		elif os.name == "nt":
 			hosts_path = os.path.join(os.environ["SYSTEMROOT"], "system32/drivers/etc/hosts")
 		else:
-			raise Exception("No hosts file found (unsupported os: " + os.name + "), specify path manually with --hosts")
+			raise Exception("No hosts file found (unsupported os: " + os.name + "), specify path manually with --hostspath")
 		if not os.path.isfile(hosts_path):
-			raise Exception("No hosts file found in \"" + hosts_path + "\", specify path manually with --hosts")
+			raise Exception("No hosts file found in \"" + hosts_path + "\", specify path manually with --hostspath")
 		opts["hostspath"] = hosts_path
 	if not "backup" in opts:
 		opts["backup"] = "backup"
