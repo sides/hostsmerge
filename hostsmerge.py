@@ -2,7 +2,7 @@
 
 import getopt, sys, os, re, socket, time, urllib2, shutil
 
-__version__ = "hostsmerge 0.0.0"
+__version__ = "hostsmerge 0.1.0"
 __confpath__ = "hostsmerge.conf"
 
 def read_config(path):
