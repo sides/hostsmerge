@@ -95,6 +95,7 @@ def merge_rules(opts):
 				hosts[ip] = sorted(hosts[ip])
 	backup_rules(opts)
 	write_hosts(opts["output"] if "output" in opts else opts["hosts"], hosts)
+	print("Successfully merged rules")
 
 def get_rules(opts):
 	hosts = read_hosts(opts["hosts"])
@@ -217,7 +218,6 @@ def main():
 		else:
 			opts["sources"] = args
 			merge_rules(opts)
-			print("Success!")
 	except Exception as err:
 		print("Failed: " + str(err))
 		sys.exit(1)
