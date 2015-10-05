@@ -30,7 +30,7 @@ def default_paths(opts):
 
 def parse_config(lines):
 	opts = {}
-	for line in lines.split("\n"):
+	for line in lines.splitlines():
 		line = re.sub(r"#.*", "", line)
 		if len(line.strip()):
 			groups = re.match(r"(?!-)([^\s=]+)(?:\s*=\s*(.*))?", line).groups()
