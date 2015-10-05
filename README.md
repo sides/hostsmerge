@@ -15,7 +15,7 @@ Option  | Explanation
 ```-h```, ```--help```  | Show help.
 ```-v```, ```--version```  | Show version.
 ```-s```, ```--set``` | See: [Setting](#setting).
-```-g```, ```--get``` | See: [Getting](#setting).
+```-g```, ```--get``` | See: [Getting](#getting).
 ```-b```, ```--no-backup``` | Don't make any backups.
 ```-n```, ```--new``` | Replace contents of old hosts file when merging. See also: [Setting](#setting).
 ```-o```, ```--sort``` | Sort the rules alphabetically by hostname.
