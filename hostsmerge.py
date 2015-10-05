@@ -37,6 +37,36 @@ def parse_config(lines):
 			opts[groups[0]] = groups[1] if groups[1] else ""
 	return opts
 
+def parse_list(lines):
+	items = []
+	for line in lines.splitlines():
+		items.append(line)
+	return items
+
+def read_list(path):
+	print("Reading " + path + "...")
+	with open(path, "r") as list_file:
+		lines = list_file.read()
+	return parse_list(lines)
+
+def get_list(url):
+	print("Retrieving " + url + "...")
+	return parse_list(urllib2.urlopen(url).read())
+
+def parse_hosts(lines):
+	hosts = {}
+	for line in lines.split("\n"):
+		line = re.sub(r"#.*", "", line)
+		if len(line.strip()):
+			match = re.match(r"\s*(\S*)\s*(.*)", line)
+			ip = match.group(1)
+			hostnames = match.group(2).split()
+			if ip in hosts:
+				hosts[ip] =  set().union(hosts[ip], hostnames)
+			else:
+				hosts[ip] = hostnames
+	return hosts
+
 def read_hosts(path):
 	print("Reading " + path + "...")
 	with open(path, "r") as hosts_file:
@@ -56,20 +86,6 @@ def get_hosts(url):
 	print("Retrieving " + url + "...")
 	return parse_hosts(urllib2.urlopen(url).read())
 
-def parse_hosts(lines):
-	hosts = {}
-	for line in lines.split("\n"):
-		line = re.sub(r"#.*", "", line)
-		if len(line.strip()):
-			match = re.match(r"\s*(\S*)\s*(.*)", line)
-			ip = match.group(1)
-			hostnames = match.group(2).split()
-			if ip in hosts:
-				hosts[ip] =  set().union(hosts[ip], hostnames)
-			else:
-				hosts[ip] = hostnames
-	return hosts
-
 def backup_rules(opts):
 	if not "no-backup" in opts and (not "output" in opts or opts["hostspath"] == opts["output"]):
 		if not os.path.exists(opts["backup"]):
@@ -79,13 +95,16 @@ def backup_rules(opts):
 def merge_rules(opts):
 	hosts = read_hosts(opts["hostspath"]) if not "new" in opts else {}
 	opt_sort = "sort" in opts
+	if "hostslist" in opts:
+		if os.path.isfile(opts["hostslist"]):
+			opts["sources"].extend(read_list(opts["hostslist"]))
+		else:
+			opts["sources"].extend(fix_url(get_list(opts["hostslist"])))
 	for uri in opts["sources"]:
 		if os.path.isfile(uri):
 			new_hosts = read_hosts(uri)
 		else:
-			if not re.match(r"^[a-zA-Z0-9]+:\/\/", uri):
-				uri = "http://" + uri
-			new_hosts = get_hosts(uri)
+			new_hosts = get_hosts(fix_url(uri))
 		for ip, hostnames in new_hosts.iteritems():
 			if ip in hosts:
 				hosts[ip] = list(set().union(hosts[ip], hostnames))
@@ -181,13 +200,18 @@ def is_ip(value):
 			return False
 	return True
 
+def fix_url(url):
+	if not re.match(r"^[a-zA-Z0-9]+:\/\/", url):
+		url = "http://" + url
+	return url
+
 def usage():
 	print("Usage:\t" + os.path.basename(sys.argv[0]) + " [options] <url|file>")
 
 def main():
-	shorthand = {"h": "help", "v": "version", "s": "set", "g": "get", "b": "no-backup", "n": "new", "o": "sort", "H": "hostspath", "B": "backup", "O": "output"}
+	shorthand = {"h": "help", "v": "version", "s": "set", "g": "get", "b": "no-backup", "n": "new", "o": "sort", "H": "hostspath", "B": "backup", "O": "output", "l": "hostslist"}
 	try:
-		copts, args = getopt.getopt(sys.argv[1:], "hvsgbnoH:B:O:", ["help", "version", "hostspath=", "set", "get", "no-backup", "backup=", "new", "sort", "output="])
+		copts, args = getopt.getopt(sys.argv[1:], "hvsgbnoH:B:O:l:", ["help", "version", "hostspath=", "set", "get", "no-backup", "backup=", "new", "sort", "output=", "hostslist="])
 	except getopt.GetoptError as err:
 		print(str(err))
 		usage()
