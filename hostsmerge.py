@@ -99,7 +99,7 @@ def merge_rules(opts):
 		if os.path.isfile(opts["hostslist"]):
 			opts["sources"].extend(read_list(opts["hostslist"]))
 		else:
-			opts["sources"].extend(fix_url(get_list(opts["hostslist"])))
+			opts["sources"].extend(get_list(fix_url(opts["hostslist"])))
 	for uri in opts["sources"]:
 		if os.path.isfile(uri):
 			new_hosts = read_hosts(uri)
