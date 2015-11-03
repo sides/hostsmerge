@@ -55,14 +55,15 @@ def get_list(url):
 
 def parse_hosts(lines):
 	hosts = {}
-	for line in lines.split("\n"):
+	for line in lines.splitlines():
 		line = re.sub(r"#.*", "", line)
 		if len(line.strip()):
 			match = re.match(r"\s*(\S*)\s*(.*)", line)
 			ip = match.group(1)
 			hostnames = match.group(2).split()
 			if ip in hosts:
-				hosts[ip] =  set().union(hosts[ip], hostnames)
+				for hostname in hostnames:
+					hosts[ip].append(hostname)
 			else:
 				hosts[ip] = hostnames
 	return hosts
@@ -108,7 +109,8 @@ def merge_rules(opts):
 			new_hosts = get_hosts(fix_url(uri))
 		for ip, hostnames in new_hosts.iteritems():
 			if ip in hosts:
-				hosts[ip] = list(set().union(hosts[ip], hostnames))
+				for hostname in hostnames:
+					hosts[ip].append(hostname)
 			else:
 				hosts[ip] = hostnames
 			if opt_sort:
