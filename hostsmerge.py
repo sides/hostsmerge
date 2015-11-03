@@ -62,8 +62,7 @@ def parse_hosts(lines):
 			ip = match.group(1)
 			hostnames = match.group(2).split()
 			if ip in hosts:
-				for hostname in hostnames:
-					hosts[ip].append(hostname)
+				hosts[ip].extend(hostnames)
 			else:
 				hosts[ip] = hostnames
 	return hosts
@@ -110,7 +109,8 @@ def merge_rules(opts):
 		for ip, hostnames in new_hosts.iteritems():
 			if ip in hosts:
 				for hostname in hostnames:
-					hosts[ip].append(hostname)
+					if not hostname in hosts[ip]:
+						hosts[ip].append(hostname)
 			else:
 				hosts[ip] = hostnames
 			if opt_sort:
