@@ -97,15 +97,15 @@ def merge_rules(opts):
 	opt_sort = "sort" in opts
 	if "list-file" in opts:
 		for hostslist in opts["list-file"].split(","):
-			if os.path.isfile(hostslist):
-				opts["sources"].extend(read_list(hostslist))
+			if is_url(hostslist):
+				opts["sources"].extend(get_list(hostslist))
 			else:
-				opts["sources"].extend(get_list(fix_url(hostslist)))
-	for uri in opts["sources"]:
-		if os.path.isfile(uri):
-			new_hosts = read_hosts(uri)
+				opts["sources"].extend(read_list(hostslist))
+	for source in opts["sources"]:
+		if is_url(source):
+			new_hosts = get_hosts(source)
 		else:
-			new_hosts = get_hosts(fix_url(uri))
+			new_hosts = read_hosts(source)
 		for ip, hostnames in new_hosts.iteritems():
 			if ip in hosts:
 				for hostname in hostnames:
@@ -203,10 +203,8 @@ def is_ip(value):
 			return False
 	return True
 
-def fix_url(url):
-	if not re.match(r"^[a-zA-Z0-9]+:\/\/", url):
-		url = "http://" + url
-	return url
+def is_url(value):
+	return bool(re.match(r"^(https?|ftp):\/\/", value))
 
 def usage():
 	print("Usage:\t%s [options] <url|file>" % os.path.basename(sys.argv[0]))
