@@ -33,7 +33,7 @@ backup-dir=~/hostsmerge/backup/
 Hyphens are optional and shorthands can be used as well.
 
 ## Merging
-By default, when neither `--set` nor `--get` are specified, hostsmerge will merge your hosts file with the sources of the passed arguments, and, if supplied, each line of `--hostlist`'s contents is accounted for as an additional argument. Multiple lists can be passed by separating them by comma.
+By default, when neither `--set` nor `--get` are specified, hostsmerge will merge your hosts file with the sources of the passed arguments, and, if supplied, each line of `--list-file`'s contents is accounted for as an additional argument. Multiple lists can be passed by separating them by comma.
 
 ### Hostslist
 Hostslist is a file or URL that contains one source per line. Example:
