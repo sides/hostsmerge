@@ -6,19 +6,19 @@ __version__ = "0.1.0"
 __confpath__ = "hostsmerge.conf"
 
 def default_paths(opts):
-	if not "hostspath" in opts:
+	if not "hosts-file" in opts:
 		hosts_path = ""
 		if os.name == "posix":
 			hosts_path = "/etc/hosts"
 		elif os.name == "nt":
 			hosts_path = os.path.join(os.environ["SYSTEMROOT"], "system32/drivers/etc/hosts")
 		else:
-			raise Exception("No hosts file found (unsupported os: %s), specify path manually with --hostspath" % os.name)
+			raise Exception("No hosts file found (unsupported os: %s), specify path manually with --hosts-file" % os.name)
 		if not os.path.isfile(hosts_path):
-			raise Exception("No hosts file found in \"%s\", specify path manually with --hostspath" % hosts_path)
-		opts["hostspath"] = hosts_path
-	if not "backup" in opts:
-		opts["backup"] = "backup"
+			raise Exception("No hosts file found in \"%s\", specify path manually with --hosts-file" % hosts_path)
+		opts["hosts-file"] = hosts_path
+	if not "backup-dir" in opts:
+		opts["backup-dir"] = "backup"
 	return opts
 
 def parse_config(lines):
@@ -87,16 +87,16 @@ def get_hosts(url):
 	return parse_hosts(urllib2.urlopen(urllib2.Request(url, headers={"User-Agent": "Python/urllib2"})).read())
 
 def backup_rules(opts):
-	if not "no-backup" in opts and (not "output" in opts or opts["hostspath"] == opts["output"]):
-		if not os.path.exists(opts["backup"]):
-			os.makedirs(opts["backup"])
-		shutil.copy2(opts["hostspath"], os.path.join("backup", os.path.splitext(opts["hostspath"])[0] + "_" + time.strftime("%Y%m%d_%H%M%S")))
+	if not "no-backup" in opts and (not "output-dir" in opts or opts["hosts-file"] == opts["output-dir"]):
+		if not os.path.exists(opts["backup-dir"]):
+			os.makedirs(opts["backup-dir"])
+		shutil.copy2(opts["hosts-file"], os.path.join("backup-dir", os.path.splitext(opts["hosts-file"])[0] + "_" + time.strftime("%Y%m%d_%H%M%S")))
 
 def merge_rules(opts):
-	hosts = read_hosts(opts["hostspath"]) if not "new" in opts else {}
+	hosts = read_hosts(opts["hosts-file"]) if not "new" in opts else {}
 	opt_sort = "sort" in opts
-	if "hostslist" in opts:
-		for hostslist in opts["hostslist"].split(","):
+	if "list-file" in opts:
+		for hostslist in opts["list-file"].split(","):
 			if os.path.isfile(hostslist):
 				opts["sources"].extend(read_list(hostslist))
 			else:
@@ -116,11 +116,11 @@ def merge_rules(opts):
 			if opt_sort:
 				hosts[ip] = sorted(hosts[ip])
 	backup_rules(opts)
-	write_hosts(opts["output"] if "output" in opts else opts["hostspath"], hosts)
+	write_hosts(opts["output-dir"] if "output-dir" in opts else opts["hosts-file"], hosts)
 	print("Successfully merged rules")
 
 def get_rules(opts):
-	hosts = read_hosts(opts["hostspath"])
+	hosts = read_hosts(opts["hosts-file"])
 	for query in opts["queries"]:
 		query_is_ip = is_ip(query)
 		found = 0
@@ -139,7 +139,7 @@ def get_rules(opts):
 			print("Warning: %s resolves to multiple hostnames?" % query)
 
 def set_rules(opts):
-	hosts = read_hosts(opts["hostspath"])
+	hosts = read_hosts(opts["hosts-file"])
 	queries = zip(opts["queries"][0::2], opts["queries"][1::2])
 	opt_new = "new" in opts
 	if len(opts["queries"]) % 2 != 0:
@@ -193,7 +193,7 @@ def set_rules(opts):
 				else:
 					print("%s - nothing found" % value)
 	backup_rules(opts)
-	write_hosts(opts["output"] if "output" in opts else opts["hostspath"], hosts)
+	write_hosts(opts["output-dir"] if "output-dir" in opts else opts["hosts-file"], hosts)
 
 def is_ip(value):
 	if not ":" in value: # ipv6
@@ -212,9 +212,9 @@ def usage():
 	print("Usage:\t%s [options] <url|file>" % os.path.basename(sys.argv[0]))
 
 def main():
-	shorthand = {"h": "help", "v": "version", "s": "set", "g": "get", "b": "no-backup", "n": "new", "o": "sort", "H": "hostspath", "B": "backup", "O": "output", "l": "hostslist"}
+	shorthand = {"s": "set", "g": "get", "B": "no-backup", "n": "new", "o": "sort", "H": "hosts-file", "l": "list-file"}
 	try:
-		copts, args = getopt.getopt(sys.argv[1:], "hvsgbnoH:B:O:l:", ["help", "version", "hostspath=", "set", "get", "no-backup", "backup=", "new", "sort", "output=", "hostslist="])
+		copts, args = getopt.getopt(sys.argv[1:], "sgBnoH:l:", ["help", "version", "hosts-file=", "set", "get", "no-backup", "backup-dir=", "new", "sort", "output-dir=", "list-file="])
 	except getopt.GetoptError as err:
 		print(str(err))
 		usage()
