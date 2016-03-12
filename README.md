@@ -10,17 +10,17 @@ Will parse options and retrieve contents of specified sources and merge them wit
 
 ## Options
 ```
--h, --help        Show help.
--v, --version     Show version.
+--help            Show help.
+--version         Show version.
 -s, --set         See: Setting.
 -g, --get         See: Getting.
--b, --no-backup   Don't make any backups.
+-B, --no-backup   Don't make any backups.
 -n, --new         Replace contents of old hosts file when merging. See also: Setting.
 -o, --sort        Sort the rules alphabetically by hostname.
--H, --hostspath   Specify manual path to hosts file. Defaults to system default.
--B, --backup      Specify manual folder for backup files. Defaults to `backup/`.
--O, --output      Specify manual output file. Defaults to the specified `hostspath`.
--l, --hostslist   See: Hostslist.
+-H, --hosts-file  Specify manual path to hosts file. Defaults to system default.
+-O, --output      Specify manual output file. Defaults to the specified --hosts-file.
+-l, --list-file   See: Hostslist.
+--backup-dir      Specify manual folder for backup files. Defaults to 'backup/'.
 ```
 
 ## Configuration
@@ -28,7 +28,7 @@ Place a `hostsmerge.conf` file in the folder where `hostsmerge.py` resides and e
 ```
 n
 --sort
-backup=~/hostsmerge/backup/
+backup-dir=~/hostsmerge/backup/
 ```
 Hyphens are optional and shorthands can be used as well.
 
