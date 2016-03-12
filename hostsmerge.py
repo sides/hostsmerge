@@ -87,7 +87,7 @@ def get_hosts(url):
 	return parse_hosts(urllib2.urlopen(urllib2.Request(url, headers={"User-Agent": "Python/urllib2"})).read())
 
 def backup_rules(opts):
-	if not "no-backup" in opts and (not "output-dir" in opts or opts["hosts-file"] == opts["output-dir"]):
+	if not "no-backup" in opts and (not "output" in opts or opts["hosts-file"] == opts["output"]):
 		if not os.path.exists(opts["backup-dir"]):
 			os.makedirs(opts["backup-dir"])
 		shutil.copy2(opts["hosts-file"], os.path.join("backup-dir", os.path.splitext(opts["hosts-file"])[0] + "_" + time.strftime("%Y%m%d_%H%M%S")))
@@ -116,7 +116,7 @@ def merge_rules(opts):
 			if opt_sort:
 				hosts[ip] = sorted(hosts[ip])
 	backup_rules(opts)
-	write_hosts(opts["output-dir"] if "output-dir" in opts else opts["hosts-file"], hosts)
+	write_hosts(opts["output"] if "output" in opts else opts["hosts-file"], hosts)
 	print("Successfully merged rules")
 
 def get_rules(opts):
@@ -193,7 +193,7 @@ def set_rules(opts):
 				else:
 					print("%s - nothing found" % value)
 	backup_rules(opts)
-	write_hosts(opts["output-dir"] if "output-dir" in opts else opts["hosts-file"], hosts)
+	write_hosts(opts["output"] if "output" in opts else opts["hosts-file"], hosts)
 
 def is_ip(value):
 	if not ":" in value: # ipv6
@@ -210,9 +210,9 @@ def usage():
 	print("Usage:\t%s [options] <url|file>" % os.path.basename(sys.argv[0]))
 
 def main():
-	shorthand = {"s": "set", "g": "get", "B": "no-backup", "n": "new", "o": "sort", "H": "hosts-file", "l": "list-file"}
+	shorthand = {"s": "set", "g": "get", "B": "no-backup", "n": "new", "o": "sort", "H": "hosts-file", "O": "output", "l": "list-file"}
 	try:
-		copts, args = getopt.getopt(sys.argv[1:], "sgBnoH:l:", ["help", "version", "hosts-file=", "set", "get", "no-backup", "backup-dir=", "new", "sort", "output-dir=", "list-file="])
+		copts, args = getopt.getopt(sys.argv[1:], "sgBnoH:l:", ["help", "version", "hosts-file=", "set", "get", "no-backup", "backup-dir=", "new", "sort", "output=", "list-file="])
 	except getopt.GetoptError as err:
 		print(str(err))
 		usage()
