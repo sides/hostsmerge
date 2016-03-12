@@ -90,7 +90,7 @@ def backup_rules(opts):
 	if not "no-backup" in opts and (not "output" in opts or opts["hosts-file"] == opts["output"]):
 		if not os.path.exists(opts["backup-dir"]):
 			os.makedirs(opts["backup-dir"])
-		shutil.copy2(opts["hosts-file"], os.path.join("backup-dir", os.path.splitext(opts["hosts-file"])[0] + "_" + time.strftime("%Y%m%d_%H%M%S")))
+		shutil.copy2(opts["hosts-file"], os.path.join(opts["backup-dir"], os.path.splitext(os.path.basename(opts["hosts-file"]))[0] + "_" + time.strftime("%Y%m%d_%H%M%S")))
 
 def merge_rules(opts):
 	hosts = read_hosts(opts["hosts-file"]) if not "new" in opts else {}
