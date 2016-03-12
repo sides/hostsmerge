@@ -212,7 +212,7 @@ def usage():
 def main():
 	alias = {"s": "set", "g": "get", "B": "no-backup", "n": "new", "o": "sort", "H": "hosts-file", "O": "output", "l": "list-file"}
 	try:
-		copts, args = getopt.getopt(sys.argv[1:], "sgBnoH:l:", ["help", "version", "hosts-file=", "set", "get", "no-backup", "backup-dir=", "new", "sort", "output=", "list-file="])
+		copts, args = getopt.getopt(sys.argv[1:], "sgBnoH:O:l:", ["help", "version", "hosts-file=", "set", "get", "no-backup", "backup-dir=", "new", "sort", "output=", "list-file="])
 	except getopt.GetoptError as err:
 		print(str(err))
 		usage()
