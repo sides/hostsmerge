@@ -210,7 +210,7 @@ def usage():
 	print("Usage:\t%s [options] <url|file>" % os.path.basename(sys.argv[0]))
 
 def main():
-	shorthand = {"s": "set", "g": "get", "B": "no-backup", "n": "new", "o": "sort", "H": "hosts-file", "O": "output", "l": "list-file"}
+	alias = {"s": "set", "g": "get", "B": "no-backup", "n": "new", "o": "sort", "H": "hosts-file", "O": "output", "l": "list-file"}
 	try:
 		copts, args = getopt.getopt(sys.argv[1:], "sgBnoH:l:", ["help", "version", "hosts-file=", "set", "get", "no-backup", "backup-dir=", "new", "sort", "output=", "list-file="])
 	except getopt.GetoptError as err:
@@ -222,8 +222,8 @@ def main():
 		opts = read_config(__confpath__)
 		for o, a in copts:
 			o = o.lstrip("-")
-			if o in shorthand:
-				o = shorthand[o]
+			if o in alias:
+				o = alias[o]
 			if o == "help":
 				usage()
 				return
