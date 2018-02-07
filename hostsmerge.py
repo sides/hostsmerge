@@ -79,7 +79,7 @@ def write_hosts(path, hosts):
 	for ip, hostnames in hosts.items():
 		for hostname in hostnames:
 			outp += ip + "\t" + hostname + "\n"
-	with open(path, "w") as hosts_file:
+	with open(path, "w", encoding="utf-8") as hosts_file:
 		hosts_file.write(outp.strip())
 
 def get_hosts(url):
